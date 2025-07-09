@@ -1,10 +1,16 @@
 import React from 'react';
 import { Tree, TreeItem, TreeItemLayout, Button, Menu, MenuList, MenuItem, MenuTrigger, MenuPopover } from '@fluentui/react-components';
-import { HomeRegular, BotRegular, WrenchRegular, BoxRegular, ChartMultipleRegular, ShoppingBagRegular, AddRegular, StarRegular, ServiceBellRegular } from '@fluentui/react-icons';
+import { HomeRegular, BotRegular, WrenchRegular, BoxRegular, ChartMultipleRegular, ShoppingBagRegular, AddRegular, StarRegular, ServiceBellRegular, DocumentRegular } from '@fluentui/react-icons';
 import { NavLink } from 'react-router-dom';
 import './Sidebar.css';
 
 const navItems = [
+  {
+    name: 'README',
+    url: '/readme',
+    icon: <DocumentRegular />,
+    key: 'readme',
+  },
   {
     name: 'Home',
     url: '/',

@@ -3,6 +3,7 @@ import {
     makeStyles,
     shorthands,
     Title1,
+    Title3,
     Card,
     CardHeader,
     Body1,
@@ -84,6 +85,41 @@ const useStyles = makeStyles({
         backgroundColor: '#0078d4',
         color: 'white',
     },
+    diffContainer: {
+        ...shorthands.margin('10px', '0'),
+        ...shorthands.padding('12px', '15px'),
+        ...shorthands.borderRadius('6px'),
+        backgroundColor: '#1e1e1e', // VS Code dark theme color
+        color: '#d4d4d4',
+        fontFamily: 'Consolas, "Courier New", monospace',
+        fontSize: '13px',
+        lineHeight: '1.5',
+        overflowX: 'auto',
+    },
+    diffTitle: {
+        color: '#569cd6',
+        fontWeight: 'bold',
+    },
+    diffLine: {
+        display: 'block',
+        whiteSpace: 'pre-wrap',
+        wordBreak: 'break-word',
+    },
+    diffRemove: {
+        color: '#ce9178',
+        backgroundColor: 'rgba(206, 145, 120, 0.1)',
+        display: 'block',
+    },
+    diffAdd: {
+        color: '#b5cea8',
+        backgroundColor: 'rgba(181, 206, 168, 0.1)',
+        display: 'block',
+    },
+    actionButtons: {
+        display: 'flex',
+        ...shorthands.gap('10px'),
+        ...shorthands.margin('10px', '0', '0', '0'),
+    },
 });
 
 const resourceIcons = {
@@ -101,26 +137,39 @@ interface Resource {
     type: keyof typeof resourceIcons;
     status: ResourceStatus;
     location: string;
+    details?: Record<string, string>;
 }
 
 interface ChatMessage {
     id: number;
     from: 'user' | 'bot';
     text: string;
+    type?: 'text' | 'diff';
+    diff?: {
+        resource: string;
+        property: string;
+        oldValue: string;
+        newValue: string;
+    };
+    actions?: Array<{
+        text: string;
+        handler: () => void;
+        appearance?: "primary" | "outline";
+    }>;
 }
 
 const initialResources: Resource[] = [
     { id: 'prod-web-app', name: 'prod-web-app', type: 'App Service', status: 'Running', location: 'East US' },
     { id: 'dev-vm-01', name: 'dev-vm-01', type: 'Virtual Machine', status: 'Stopped', location: 'West Europe' },
     { id: 'main-storage-acc', name: 'main-storage-acc', type: 'Storage Account', status: 'Running', location: 'East US' },
-    { id: 'user-db', name: 'user-db', type: 'SQL Database', status: 'Running', location: 'West Europe' },
+    { id: 'user-db', name: 'user-db', type: 'SQL Database', status: 'Running', location: 'West Europe', details: { storage: '2 GB' } },
 ];
 
 const ResourceManagementPage: React.FC = () => {
     const styles = useStyles();
     const [resources, setResources] = useState<Resource[]>(initialResources);
     const [messages, setMessages] = useState<ChatMessage[]>([
-        { id: 1, from: 'bot', text: "I can help you manage your resources. What would you like to do?" }
+        { id: 1, from: 'bot', text: "I can help you manage your resources. Try asking me to 'Increase user-db storage to 10 GB'." }
     ]);
     const [input, setInput] = useState('');
     const chatHistoryRef = useRef<HTMLDivElement>(null);
@@ -131,42 +180,86 @@ const ResourceManagementPage: React.FC = () => {
         }
     }, [messages]);
 
+    const handleApplyChange = (resourceId: string, newValue: string) => {
+        setMessages(prev => prev.filter(m => m.type !== 'diff'));
+
+        const resourceName = resources.find(r => r.id === resourceId)?.name || resourceId;
+
+        const steps = [
+            { delay: 500, text: `✅ Confirmation received. Applying changes to **${resourceName}**.` },
+            { delay: 1500, text: `Generating and deploying ARM template...` },
+            { delay: 3500, text: `Validating deployment...` },
+            { delay: 5000, text: `✅ Success! Storage for **${resourceName}** has been updated to **${newValue}**.`, action: () => {
+                setResources(prev => prev.map(r => r.id === resourceId ? { ...r, details: { ...r.details, storage: newValue } } : r));
+            }},
+        ];
+
+        let cumulativeDelay = 0;
+        steps.forEach(step => {
+            cumulativeDelay += step.delay;
+            setTimeout(() => {
+                if (step.action) step.action();
+                setMessages(prev => [...prev, { id: Date.now() + cumulativeDelay, from: 'bot', text: step.text }]);
+            }, cumulativeDelay);
+        });
+    };
+
+    const handleCancelChange = () => {
+        setMessages(prev => prev.filter(m => m.type !== 'diff'));
+        setTimeout(() => {
+            setMessages(prev => [...prev, { id: Date.now(), from: 'bot', text: "Understood. The operation has been cancelled." }]);
+        }, 500);
+    };
+
     const handleSend = () => {
         if (input.trim() === '') return;
 
         const userMessage: ChatMessage = { id: Date.now(), from: 'user', text: input };
         setMessages(prev => [...prev, userMessage]);
-
-        const lowerInput = input.toLowerCase();
-        const targetResource = resources.find(r => lowerInput.includes(r.name.toLowerCase()));
-        
         setInput('');
 
-        if (targetResource) {
-            const originalStatus = targetResource.status;
-            const updateResourceStatus = (id: string, status: ResourceStatus) => {
-                setResources(prev => prev.map(r => r.id === id ? { ...r, status } : r));
-            };
+        const lowerInput = input.toLowerCase();
+        const storageRegex = /increase(?: storage for| my)? ([\w-]+(?:-db)?) storage to ([\d]+ ?gb)/i;
+        const match = lowerInput.match(storageRegex);
 
-            const steps = [
-                { delay: 500, text: `Understood. Starting operation on resource: **${targetResource.name}**.` },
-                { delay: 1500, text: `Applying configuration changes...`, action: () => updateResourceStatus(targetResource.id, 'Updating') },
-                { delay: 3500, text: `Validating changes and restarting services...` },
-                { delay: 5000, text: `✅ Operation successful! **${targetResource.name}** has been updated.`, action: () => updateResourceStatus(targetResource.id, originalStatus) },
-            ];
+        if (match) {
+            const resourceName = match[1]; // Use the captured resource name
+            const newSize = match[2].toUpperCase();
+            const resource = resources.find(r => r.name.toLowerCase() === resourceName.toLowerCase());
 
-            let cumulativeDelay = 0;
-            steps.forEach(step => {
-                cumulativeDelay += step.delay;
+            if (!resource) {
                 setTimeout(() => {
-                    if (step.action) step.action();
-                    setMessages(prev => [...prev, { id: Date.now() + cumulativeDelay, from: 'bot', text: step.text }]);
-                }, cumulativeDelay);
-            });
+                    setMessages(prev => [...prev, { id: Date.now(), from: 'bot', text: `Sorry, I couldn't find the resource named "${resourceName}". Please check the name and try again.` }]);
+                }, 1000);
+                return;
+            }
+
+            const oldSize = resource?.details?.storage || 'N/A';
+
+            const diffMessage: ChatMessage = {
+                id: Date.now() + 1,
+                from: 'bot',
+                text: `I've generated an ARM template to update the storage for **${resource.name}**. Please review the diff and confirm.`,
+                type: 'diff',
+                diff: {
+                    resource: resource.name,
+                    property: 'properties.storageProfile.dataDisks[0].diskSizeGB',
+                    oldValue: oldSize,
+                    newValue: newSize,
+                },
+                actions: [
+                    { text: 'Apply Change', handler: () => handleApplyChange(resource.id, newSize), appearance: 'primary' },
+                    { text: 'Cancel', handler: handleCancelChange, appearance: 'outline' },
+                ]
+            };
+            
+            setTimeout(() => {
+                setMessages(prev => [...prev, diffMessage]);
+            }, 1500);
 
         } else {
             setTimeout(() => {
-                setMessages(prev => [...prev, { id: Date.now(), from: 'bot', text: "Sorry, I couldn't find that resource. Please specify the resource by its name." }]);
+                setMessages(prev => [...prev, { id: Date.now(), from: 'bot', text: "Sorry, I can only process requests to increase database storage right now (e.g., 'increase user-db storage to 10gb')." }]);
             }, 1000);
         }
     };
@@ -194,6 +287,7 @@ const ResourceManagementPage: React.FC = () => {
                                 <TableHeaderCell>Type</TableHeaderCell>
                                 <TableHeaderCell>Status</TableHeaderCell>
                                 <TableHeaderCell>Location</TableHeaderCell>
+                                <TableHeaderCell>Details</TableHeaderCell>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -203,6 +297,7 @@ const ResourceManagementPage: React.FC = () => {
                                     <TableCell>{res.type}</TableCell>
                                     <TableCell>{getStatusBadge(res.status)}</TableCell>
                                     <TableCell>{res.location}</TableCell>
+                                    <TableCell>{res.details?.storage ? `Storage: ${res.details.storage}` : ''}</TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>
@@ -217,6 +312,27 @@ const ResourceManagementPage: React.FC = () => {
                             {msg.from === 'bot' && <Avatar name="Copilot" color="brand" />}
                             <div className={`${styles.messageBubble} ${msg.from === 'user' ? styles.userMessageBubble : ''}`}>
                                 <Body1>{msg.text}</Body1>
+                                {msg.type === 'diff' && msg.diff && (
+                                    <div className={styles.diffContainer}>
+                                        <Title3 className={styles.diffTitle}>ARM Template Diff</Title3>
+                                        <pre style={{ margin: 0, padding: 0 }}>
+                                            <code>
+                                                <span className={styles.diffLine}>  "resource": "{msg.diff.resource}",</span>
+                                                <span className={styles.diffLine}>  "properties": {"{"}</span>
+                                                <span className={styles.diffRemove}>-   "{msg.diff.property}": "{msg.diff.oldValue}"</span>
+                                                <span className={styles.diffAdd}>+   "{msg.diff.property}": "{msg.diff.newValue}"</span>
+                                                <span className={styles.diffLine}>  {"}"}</span>
+                                            </code>
+                                        </pre>
+                                    </div>
+                                )}
+                                {msg.actions && (
+                                    <div className={styles.actionButtons}>
+                                        {msg.actions.map(action => (
+                                            <Button key={action.text} onClick={action.handler} appearance={action.appearance}>{action.text}</Button>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
                         </div>
                     ))}
@@ -226,7 +342,7 @@ const ResourceManagementPage: React.FC = () => {
                         value={input}
                         onChange={(_, data) => setInput(data.value)}
                         onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-                        placeholder="e.g., Restart prod-web-app"
+                        placeholder="e.g., Increase user-db storage to 10 GB"
                         style={{ width: '100%' }}
                     />
                     <Button icon={<SendRegular />} appearance="primary" onClick={handleSend} />

@@ -7,6 +7,7 @@ import ResourceManagementPage from './pages/ResourceManagementPage/ResourceManag
 import ObservabilityPage from './pages/ObservabilityPage/ObservabilityPage';
 import MarketplacePage from './pages/MarketplacePage/MarketplacePage';
 import CostManagementPage from './pages/CostManagementPage/CostManagementPage';
+import ReadmePage from './pages/ReadmePage/ReadmePage';
 import './App.css';
 
 function App() {
@@ -15,6 +16,7 @@ function App() {
       <Layout>
         <Routes>
           <Route path="/" element={<CopilotHomePage />} />
+          <Route path="/readme" element={<ReadmePage />} />
           <Route path="/azure-services" element={<HomePage />} />
           <Route path="/agent-workshop" element={<AgentWorkshopPage />} />
           <Route path="/resource-management" element={<ResourceManagementPage />} />

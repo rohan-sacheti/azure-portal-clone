@@ -1,0 +1,89 @@
+.readme-page-container {
+  padding: 20px;
+  background-color: #f9f9f9;
+  height: 100%;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.readme-header {
+  padding-bottom: 20px;
+  border-bottom: 1px solid #ccc;
+  margin-bottom: 20px;
+}
+
+.readme-header h1 {
+  font-size: 24px;
+  margin: 0;
+  color: #333;
+}
+
+.readme-header p {
+  font-size: 14px;
+  color: #666;
+  margin-top: 5px;
+}
+
+.readme-content {
+  flex-grow: 1;
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.user-story {
+  margin-bottom: 25px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #eee;
+}
+
+.user-story:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.user-story h2 {
+  font-size: 18px;
+  color: #005a9e; /* Azure blue */
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+.user-story p {
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 0 0 10px 0;
+}
+
+.user-story p strong {
+  color: #333;
+  margin-right: 5px;
+}
+
+.user-story .rationale {
+  font-style: italic;
+  color: #555;
+  background-color: #f5f5f5;
+  padding: 10px;
+  border-radius: 4px;
+  margin-top: 10px;
+}
+
+.user-story .rationale strong {
+    font-style: normal;
+}
+
+.readme-pre {
+  white-space: pre-wrap;       /* Since CSS 2.1 */
+  white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+  white-space: -pre-wrap;      /* Opera 4-6 */
+  white-space: -o-pre-wrap;    /* Opera 7 */
+  word-wrap: break-word;       /* Internet Explorer 5.5+ */
+  font-size: 13px;
+  line-height: 1.5;
+  margin: 0;
+}

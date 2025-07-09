@@ -13,13 +13,13 @@ interface Message {
 
 const CopilotBar: React.FC = () => {
     const [messages, setMessages] = useState<Message[]>([
-          {   
+          {
             id: 1, 
             from: 'bot', 
             text: "Hello! I'm your Azure Copilot assistant. I can help you with resource management, troubleshooting, best practices, and answering questions about Azure services. What can I help you with today?", 
             avatar: <Avatar name="Copilot" badge={{ status: 'available' }} color="colorful" />,
             timestamp: new Date()
-          }
+        }
     ]);
     const [input, setInput] = useState('');
     const [isTyping, setIsTyping] = useState(false);
