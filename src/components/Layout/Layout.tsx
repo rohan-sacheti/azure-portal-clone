@@ -14,4 +14,17 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
     <div className="layout">
       <Header onToggleCopilot={toggleCopilot} />
-   
+      <div className="main-content">
+        <Sidebar />
+        <main className={`content ${isCopilotOpen ? 'copilot-open' : ''}`}>
+          {children}
+        </main>
+        <div className={`copilot-container ${isCopilotOpen ? 'open' : ''}`}>
+          <CopilotBar />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Layout;

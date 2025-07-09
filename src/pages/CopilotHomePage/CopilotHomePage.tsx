@@ -121,8 +121,8 @@ const CopilotHomePage: React.FC = () => {
                 <div className={styles.inputArea}>
                     <Input 
                         value={inputValue}
-                        onChange={(e) => setInputValue(e.target.value)}
-                        onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+                        onChange={(_, data) => setInputValue(data.value)}
+                        onKeyDown={(e) => e.key === 'Enter' && handleSend()}
                         placeholder="Ask me anything about Azure..."
                         style={{ width: '100%' }} 
                     />
