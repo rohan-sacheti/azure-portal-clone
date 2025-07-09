@@ -13,7 +13,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
   return (
     <div className="layout">
-      <Header onToggleCopilot={toggleCopilot} />
+      <Header onToggleCopilot={toggleCopilot}/>
       <div className="main-content">
         <Sidebar />
         <main className={`content ${isCopilotOpen ? 'copilot-open' : ''}`}>

@@ -24,18 +24,19 @@
 
 .copilot-container {
   width: 350px;
-  position: fixed; /* Use fixed positioning */
+  position: fixed;
   right: 0;
-  top: 50px; /* Position below header */
-  bottom: 0;
+  top: 50px; /* Match header height exactly */
+  height: calc(100vh - 50px); /* Ensure full height minus header */
   background-color: #fff;
   border-left: 1px solid #e0e0e0;
-  transform: translateX(100%); /* Hide off-screen to the right */
+  transform: translateX(100%);
   transition: transform 0.3s ease;
   z-index: 1000;
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1);
 }
 
 .copilot-container.open {

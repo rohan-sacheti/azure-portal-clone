@@ -30,6 +30,9 @@ import {
     BookRegular,
     HatGraduationRegular,
     HeadsetRegular,
+    Group20Regular,
+    Group24Regular,
+    TabDesktopMultipleAddRegular,
 } from '@fluentui/react-icons';
 import './HomePage.css';
 
@@ -70,8 +73,8 @@ const useStyles = makeStyles({
 
 const services = [
     { name: 'App Services', icon: <AppFolderRegular /> },
-    { name: 'Function App', icon: <ServerRegular /> },
     { name: 'Virtual machines', icon: <DesktopRegular /> },
+    { name: 'Virtual Machine Scale Sets', icon: <Group24Regular /> },
     { name: 'Storage accounts', icon: <StorageRegular /> },
     { name: 'Azure Cosmos DB', icon: <DatabaseRegular /> },
     { name: 'SQL databases', icon: <DatabaseRegular /> },

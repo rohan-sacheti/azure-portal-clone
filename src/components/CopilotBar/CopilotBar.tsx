@@ -47,88 +47,118 @@ const CopilotBar: React.FC = () => {
         const userQuery = input.toLowerCase();
         setInput('');
         setIsTyping(true);
-        
-        // Initial response - agent spinning up
-        setTimeout(() => {
-            setIsTyping(false);
-            setMessages(prev => [...prev, {
-                id: Date.now() + 1,
-                from: 'bot',
-                text: "🤖 Initializing Azure Agent... I'm analyzing your request and spinning up the appropriate services.",
-                avatar: <Avatar name="Copilot" badge={{ status: 'busy' }} color="colorful" />,
-                timestamp: new Date()
-            }]);
-            
-            setIsTyping(true);
-            
-            // Progress update 1
+
+        // Advanced simulation for VM with remote storage
+        if (userQuery.includes('vm') && (userQuery.includes('storage') || userQuery.includes('disk'))) {
+            // A more detailed, multi-step simulation for a specific, complex task
+            const steps = [
+                { delay: 1000, text: "🤖 Understood. Initializing a specialized Azure Deployment Agent for your request..." },
+                { delay: 2500, text: "🔍 Accessing provided GitHub repository for deployment instructions... Using `https://github.com/Azure/vm-scripts/blob/main/create-vm-with-storage-and-sqldb.sh`" },
+                { delay: 4000, text: "⚙️ **Step 1/3: Creating Virtual Machine...**\nThis might take a few moments. I'm provisioning a `Standard_D2s_v3` VM in `East US`." },
+                { delay: 5500, text: "💾 **Step 2/3: Attaching Remote Storage...**\nProvisioning a 512 GB Premium SSD and attaching it to the new VM." },
+                { delay: 7000, text: "🗄️ **Step 3/3: Configuring SQLDB Server...**\nSetting up the SQL database and configuring firewall rules as per the guide." },
+                { delay: 8500, text: "✅ **Deployment Complete!**\n\nYour new Virtual Machine with remote storage and a SQLDB server is ready.\n\nI've placed it in a new resource group named `rg-vm-deployment-01`.\n\nWhat would you like to do next?" }
+            ];
+
+            let cumulativeDelay = 0;
+            steps.forEach((step, index) => {
+                cumulativeDelay += step.delay;
+                setTimeout(() => {
+                    setIsTyping(index < steps.length - 1);
+                    setMessages(prev => [...prev, {
+                        id: Date.now() + index,
+                        from: 'bot',
+                        text: step.text,
+                        avatar: <Avatar name="Copilot" badge={{ status: index < steps.length - 1 ? 'busy' : 'available' }} color="colorful" />,
+                        timestamp: new Date()
+                    }]);
+                }, cumulativeDelay);
+            });
+
+        } else {
+            // Generic simulation for other queries
+            // Initial response - agent spinning up
             setTimeout(() => {
                 setIsTyping(false);
                 setMessages(prev => [...prev, {
-                    id: Date.now() + 2,
+                    id: Date.now() + 1,
                     from: 'bot',
-                    text: "⚡ Agent status: Connected to Azure Resource Manager\n📊 Scanning your subscription and resources...",
+                    text: "🤖 Initializing Azure Agent... I'm analyzing your request and spinning up the appropriate services.",
                     avatar: <Avatar name="Copilot" badge={{ status: 'busy' }} color="colorful" />,
                     timestamp: new Date()
                 }]);
                 
                 setIsTyping(true);
                 
-                // Progress update 2
+                // Progress update 1
                 setTimeout(() => {
                     setIsTyping(false);
-                    
-                    let taskSpecificResponse = "";
-                    if (userQuery.includes('vm') || userQuery.includes('virtual machine')) {
-                        taskSpecificResponse = "🖥️ Analyzing virtual machine configurations and recommendations...";
-                    } else if (userQuery.includes('storage') || userQuery.includes('blob')) {
-                        taskSpecificResponse = "💾 Evaluating storage account settings and optimization opportunities...";
-                    } else if (userQuery.includes('cost') || userQuery.includes('billing')) {
-                        taskSpecificResponse = "💰 Analyzing cost patterns and identifying optimization opportunities...";
-                    } else if (userQuery.includes('security') || userQuery.includes('compliance')) {
-                        taskSpecificResponse = "🔒 Running security compliance checks and vulnerability assessments...";
-                    } else if (userQuery.includes('network') || userQuery.includes('vnet')) {
-                        taskSpecificResponse = "🌐 Mapping network topology and analyzing connectivity patterns...";
-                    } else {
-                        taskSpecificResponse = "🔍 Processing your request and gathering relevant Azure insights...";
-                    }
-                    
                     setMessages(prev => [...prev, {
-                        id: Date.now() + 3,
+                        id: Date.now() + 2,
                         from: 'bot',
-                        text: taskSpecificResponse,
+                        text: "⚡ Agent status: Connected to Azure Resource Manager\n📊 Scanning your subscription and resources...",
                         avatar: <Avatar name="Copilot" badge={{ status: 'busy' }} color="colorful" />,
                         timestamp: new Date()
                     }]);
                     
                     setIsTyping(true);
                     
-                    // Final response
+                    // Progress update 2
                     setTimeout(() => {
                         setIsTyping(false);
+                        
+                        let taskSpecificResponse = "";
+                        if (userQuery.includes('vm') || userQuery.includes('virtual machine')) {
+                            taskSpecificResponse = "🖥️ Analyzing virtual machine configurations and recommendations...";
+                        } else if (userQuery.includes('storage') || userQuery.includes('blob')) {
+                            taskSpecificResponse = "💾 Evaluating storage account settings and optimization opportunities...";
+                        } else if (userQuery.includes('cost') || userQuery.includes('billing')) {
+                            taskSpecificResponse = "💰 Analyzing cost patterns and identifying optimization opportunities...";
+                        } else if (userQuery.includes('security') || userQuery.includes('compliance')) {
+                            taskSpecificResponse = "🔒 Running security compliance checks and vulnerability assessments...";
+                        } else if (userQuery.includes('network') || userQuery.includes('vnet')) {
+                            taskSpecificResponse = "🌐 Mapping network topology and analyzing connectivity patterns...";
+                        } else {
+                            taskSpecificResponse = "🔍 Processing your request and gathering relevant Azure insights...";
+                        }
+                        
                         setMessages(prev => [...prev, {
-                            id: Date.now() + 4,
+                            id: Date.now() + 3,
                             from: 'bot',
-                            text: "✅ Analysis complete! I've gathered comprehensive insights about your request.\n\n🔔 I'll ping you with detailed recommendations and actionable steps in just a moment. You can continue working while I prepare the full report.\n\n💡 In the meantime, feel free to ask me anything else!",
-                            avatar: <Avatar name="Copilot" badge={{ status: 'available' }} color="colorful" />,
+                            text: taskSpecificResponse,
+                            avatar: <Avatar name="Copilot" badge={{ status: 'busy' }} color="colorful" />,
                             timestamp: new Date()
                         }]);
                         
-                        // Simulate the "ping back" after task completion
+                        setIsTyping(true);
+                        
+                        // Final response
                         setTimeout(() => {
+                            setIsTyping(false);
                             setMessages(prev => [...prev, {
-                                id: Date.now() + 5,
+                                id: Date.now() + 4,
                                 from: 'bot',
-                                text: "🎯 **Task Complete!** I've finished analyzing your request.\n\nHere's what I found:\n• 3 optimization opportunities identified\n• 2 best practice recommendations\n• 1 potential cost savings area\n\nWould you like me to walk you through these findings, or would you prefer a detailed summary?",
+                                text: "✅ Analysis complete! I've gathered comprehensive insights about your request.\n\n🔔 I'll ping you with detailed recommendations and actionable steps in just a moment. You can continue working while I prepare the full report.\n\n💡 In the meantime, feel free to ask me anything else!",
                                 avatar: <Avatar name="Copilot" badge={{ status: 'available' }} color="colorful" />,
                                 timestamp: new Date()
                             }]);
-                        }, 8000); // Ping back after 8 seconds
-                        
-                    }, 2000);
-                }, 1500);
-            }, 1200);
-        }, 800);
+                            
+                            // Simulate the "ping back" after task completion
+                            setTimeout(() => {
+                                setMessages(prev => [...prev, {
+                                    id: Date.now() + 5,
+                                    from: 'bot',
+                                    text: "🎯 **Task Complete!** I've finished analyzing your request.\n\nHere's what I found:\n• 3 optimization opportunities identified\n• 2 best practice recommendations\n• 1 potential cost savings area\n\nWould you like me to walk you through these findings, or would you prefer a detailed summary?",
+                                    avatar: <Avatar name="Copilot" badge={{ status: 'available' }} color="colorful" />,
+                                    timestamp: new Date()
+                                }]);
+                            }, 8000); // Ping back after 8 seconds
+                            
+                        }, 2000);
+                    }, 1500);
+                }, 1200);
+            }, 800);
+        }
     };
 
     const handleKeyPress = (e: React.KeyboardEvent) => {
