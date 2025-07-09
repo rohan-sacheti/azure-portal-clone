@@ -64,7 +64,7 @@ const steps = [
 const AgentWorkshopPage: React.FC = () => {
     const styles = useStyles();
     const [currentStep, setCurrentStep] = useState(0);
-    const [formData, setFormData] = useState({
+    const [formData] = useState({
         agentName: 'MyNewAgent',
         subscription: 'Free Trial',
         region: 'east-us',

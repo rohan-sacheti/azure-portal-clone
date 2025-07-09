@@ -9,7 +9,6 @@ import {
 } from '@fluentui/react-components';
 import {
     AppFolderRegular,
-    ServerRegular,
     DesktopRegular,
     StorageRegular,
     DatabaseRegular,
@@ -30,9 +29,7 @@ import {
     BookRegular,
     HatGraduationRegular,
     HeadsetRegular,
-    Group20Regular,
     Group24Regular,
-    TabDesktopMultipleAddRegular,
 } from '@fluentui/react-icons';
 import './HomePage.css';
 
@@ -154,4 +151,4 @@ const HomePage: React.FC = () => {
     );
 };
 
-export default HomePage;
+export de
