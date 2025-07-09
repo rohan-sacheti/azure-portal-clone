@@ -1,0 +1,32 @@
+.sidebar {
+    width: 250px;
+    background-color: #f4f4f4;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+.create-button-container {
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.sidebar-link {
+    text-decoration: none;
+    color: inherit;
+}
+
+.sidebar-link:hover {
+    text-decoration: none;
+}
+
+.sidebar-link.active {
+    font-weight: bold;
+    background-color: #e0e0e0;
+}
+
+.sidebar-favorites {
+    margin-top: auto;
+    padding-top: 10px;
+    border-top: 1px solid #ccc;
+}
